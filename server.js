@@ -4,7 +4,7 @@ const fs = require('fs');
 const notes = require('./db/db.json');
 
 // Helper method for generating unique ids
-const uuid = require('./helpers/uuid');
+const uuid = require('uuid/v1');
 
 // Initialize the app and create a PORT
 const app = express();
@@ -27,31 +27,26 @@ app.get('/notes', (req, res) =>
 
 // GET request for notes
 app.get('/api/notes', (req, res) => {
-  
-        //Send a message to the client
-        fs.readFile('./db/db.json', 'utf8', (err, data) => {
-            if (err) {
-                console.log(err);
-            }
-                const parsedNotes = JSON.parse(data);
-                res.json(parsedNotes);
-        });
-      
-     });
 
+    //Send a message to the client
+    fs.readFile('./db/db.json', 'utf8', (err, data) => {
+        if (err) {
+            console.log(err);
+        }
+        const parsedNotes = JSON.parse(data);
+        res.json(parsedNotes);
+    });
 
-    // JSON.parse(`${req.text} request received to get notes`);
+});
 
-    // // log our request to the terminal
-    // console.log(`${req.text} request received to get notes`)
-
+// Get request for a single note
 app.get('/api/notes/:note_id', (req, res) => {
-    if(req.body && req.params.note_id) {
+    if (req.body && req.params.note_id) {
         console.log(`${req.text} request received to get a single note`);
         const noteId = req.params.note_id;
-        for(let i = 0; i < notes.length; i++) {
+        for (let i = 0; i < notes.length; i++) {
             const currentNote = notes[1];
-            if(currentNote.note_id === noteId) {
+            if (currentNote.note_id === noteId) {
                 res.json(currentNote);
                 return;
             }
@@ -59,6 +54,20 @@ app.get('/api/notes/:note_id', (req, res) => {
         res.json('Note ID not found');
     }
 });
+
+// Delete request
+app.delete('/api/notes/:note_id', (req, res) => {
+    const id  = req.params.note_id;
+
+    const deleted = notes.find(note => note.id === id);
+    if (deleted) {
+        notes = notes.filter(note => note.id != id);
+    } else {
+        res
+            .status(404)
+            .json({ message: "Note doesn't exist" })
+    }
+})
 
 //  POST request to add a note
 app.post('/api/notes', (req, res) => {
@@ -68,7 +77,7 @@ app.post('/api/notes', (req, res) => {
     // Destructuring assignment for the items in req.body
     const { title, text } = req.body;
 
-    if(title && text) {
+    if (title && text) {
         // Variable for the object we will save
         const newNote = {
             title,
@@ -89,16 +98,16 @@ app.post('/api/notes', (req, res) => {
 
                 //  Write updated notes back to the file
                 fs.writeFile('./db/db.json',
-                JSON.stringify(parsedNotes, null, 4),
-                (writeErr) =>
-                writeErr
-                ? console.error(writeErr)
-                : console.log('Successfully updated notes!')
+                    JSON.stringify(parsedNotes, null, 4),
+                    (writeErr) =>
+                        writeErr
+                            ? console.error(writeErr)
+                            : console.log('Successfully updated notes!')
                 );
             }
         });
 
-        const response = { 
+        const response = {
             status: 'succes',
             body: newNote,
         };
@@ -111,6 +120,6 @@ app.post('/api/notes', (req, res) => {
 });
 
 
-app.listen(PORT, () => 
-console.log(`App listening at http://localhost:${PORT}`)
+app.listen(PORT, () =>
+    console.log(`App listening at http://localhost:${PORT}`)
 )
