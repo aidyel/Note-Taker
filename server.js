@@ -49,7 +49,7 @@ app.get('/api/notes/:note_id', (req, res) => {
     }
 });
 
-//  POST request to add a review
+//  POST request to add a note
 app.post('/api/notes', (req, res) => {
     // Log that a POST request was retrieved
     console.log(`${req.me} request received to add a note`);
@@ -65,18 +65,18 @@ app.post('/api/notes', (req, res) => {
             note_id: uuid(),
         };
 
-        // obtain existing reviews
-        fs.readFile('./db/reviews.json', 'utf-8', (err, data) => {
+        // obtain existing notes
+        fs.readFile('./db/db.json', 'utf8', (err, data) => {
             if (err) {
                 console.log(err);
             } else {
                 //  Convert string into JSON object
                 const parsedNotes = JSON.parse(data);
 
-                //  Add a new review
+                //  Add a new note
                 parsedNotes.push(newNote);
 
-                //  Write updated revies back to the file
+                //  Write updated notes back to the file
                 fs.writeFile('./db/db.json',
                 JSON.stringify(parsedNotes, null, 4),
                 (writeErr) =>
