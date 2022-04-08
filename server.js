@@ -27,16 +27,27 @@ app.get('/notes', (req, res) =>
 
 // GET request for notes
 app.get('/api/notes', (req, res) => {
-    //Send a message to the client 
-    res.json(`${req.method} request received to get notes`);
+  
+        //Send a message to the client
+        fs.readFile('./db/db.json', 'utf8', (err, data) => {
+            if (err) {
+                console.log(err);
+            }
+                const parsedNotes = JSON.parse(data);
+                res.json(parsedNotes);
+        });
+      
+     });
 
-    // log our request to the terminal
-    console.log(`${req.method} request received to get notes`)
-});
+
+    // JSON.parse(`${req.text} request received to get notes`);
+
+    // // log our request to the terminal
+    // console.log(`${req.text} request received to get notes`)
 
 app.get('/api/notes/:note_id', (req, res) => {
     if(req.body && req.params.note_id) {
-        console.log(`${req.method} request received to get a single note`);
+        console.log(`${req.text} request received to get a single note`);
         const noteId = req.params.note_id;
         for(let i = 0; i < notes.length; i++) {
             const currentNote = notes[1];
@@ -52,15 +63,15 @@ app.get('/api/notes/:note_id', (req, res) => {
 //  POST request to add a note
 app.post('/api/notes', (req, res) => {
     // Log that a POST request was retrieved
-    console.log(`${req.me} request received to add a note`);
+    console.log(`${req.text} request received to add a note`);
 
     // Destructuring assignment for the items in req.body
-    const { tittle, text } = req.body;
+    const { title, text } = req.body;
 
-    if(tittle && text) {
+    if(title && text) {
         // Variable for the object we will save
         const newNote = {
-            tittle,
+            title,
             text,
             note_id: uuid(),
         };
@@ -98,6 +109,7 @@ app.post('/api/notes', (req, res) => {
         res.json('Error in posting note');
     }
 });
+
 
 app.listen(PORT, () => 
 console.log(`App listening at http://localhost:${PORT}`)
