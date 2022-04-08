@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const notes = require('./Develop/db/db.json');
+const notes = require('./db/db.json');
 
 // Helper method for generating unique ids
 const uuid = require('./helpers/uuid');
@@ -49,7 +49,55 @@ app.get('/api/notes/:note_id', (req, res) => {
     }
 });
 
+//  POST request to add a review
+app.post('/api/notes', (req, res) => {
+    // Log that a POST request was retrieved
+    console.log(`${req.me} request received to add a note`);
 
+    // Destructuring assignment for the items in req.body
+    const { tittle, text } = req.body;
+
+    if(tittle && text) {
+        // Variable for the object we will save
+        const newNote = {
+            tittle,
+            text,
+            note_id: uuid(),
+        };
+
+        // obtain existing reviews
+        fs.readFile('./db/reviews.json', 'utf-8', (err, data) => {
+            if (err) {
+                console.log(err);
+            } else {
+                //  Convert string into JSON object
+                const parsedNotes = JSON.parse(data);
+
+                //  Add a new review
+                parsedNotes.push(newNote);
+
+                //  Write updated revies back to the file
+                fs.writeFile('./db/db.json',
+                JSON.stringify(parsedNotes, null, 4),
+                (writeErr) =>
+                writeErr
+                ? console.error(writeErr)
+                : console.log('Successfully updated notes!')
+                );
+            }
+        });
+
+        const response = { 
+            status: 'succes',
+            body: newNote,
+        };
+
+        console.log(response);
+        res.json(response);
+    } else {
+        res.json('Error in posting note');
+    }
+});
 
 app.listen(PORT, () => 
 console.log(`App listening at http://localhost:${PORT}`)
