@@ -33,7 +33,14 @@ app.get('/api/notes', (req, res) => {
         if (err) {
             console.log(err);
         }
-        const parsedNotes = JSON.parse(data);
+        let parsedNotes;
+        try {
+            parsedNotes = JSON.parse(data);
+        }
+        catch(err) {
+            parsedNotes = [];
+        }
+      
         res.json(parsedNotes);
     });
 
@@ -41,32 +48,76 @@ app.get('/api/notes', (req, res) => {
 
 // Get request for a single note
 app.get('/api/notes/:note_id', (req, res) => {
-    if (req.body && req.params.note_id) {
-        console.log(`${req.text} request received to get a single note`);
-        const noteId = req.params.note_id;
-        for (let i = 0; i < notes.length; i++) {
-            const currentNote = notes[1];
-            if (currentNote.note_id === noteId) {
-                res.json(currentNote);
-                return;
-            }
+    console.log(req.params.note_id);
+    fs.readFile('./db/db.json', 'utf8', (err, data) => {
+        if (err) {
+            console.log(err);
         }
-        res.json('Note ID not found');
-    }
+        const notesId = JSON.parse(data);
+
+        res.json(notesId.filter((noteId) => noteId.note_id === req.params.note_id));
+    });
+
+    // if (req.body && req.params.note_id) {
+    //     console.log(`${req.text} request received to get an single note`);
+    //     const noteId = req.params.note_id;
+    //     for (let i = 0; i < notes.length; i++) {
+    //         const currentNote = notes[1];
+    //         if (currentNote.note_id === noteId) {
+    //             res.json(currentNote);
+    //             return;
+    //         }
+    //     }
+    //     res.json('Note ID not found');
+    // }
 });
 
 // Delete request
 app.delete('/api/notes/:note_id', (req, res) => {
-    const id  = req.params.note_id;
+    console.log(req.params.note_id);
 
-    const deleted = notes.find(note => note.id === id);
-    if (deleted) {
-        notes = notes.filter(note => note.id != id);
-    } else {
-        res
-            .status(404)
-            .json({ message: "Note doesn't exist" })
-    }
+    fs.readFile('./db/db.json', 'utf8', (err, data) => {
+        if (err) {
+            console.log(err);
+        }
+        let notesId = JSON.parse(data);
+ 
+        const deleteId = req.params.note_id;
+
+        const deleted = notesId.find(note => note.note_id === deleteId);
+        console.log("Note to delete ", deleted)
+        if (deleted) {
+            notesId = notesId.filter(note => note.note_id != deleteId);
+
+            fs.writeFile('./db/db.json',
+            JSON.stringify(notesId, null, 4),
+            (writeErr) =>
+                writeErr
+                    ? console.error(writeErr)
+                    : console.log('Successfully deleted notes!')
+        );
+            res.json({
+                ok: true,
+
+            })
+        } else {
+            res
+                .status(404)
+                .json({ message: "Note doesn't exist" })
+        }
+      
+    });
+
+
+    // console.log(req.params)
+    // const deleted = notes.find(note => note.id === id);
+    // if (deleted) {
+    //     notes = notes.filter(note => note.id != id);
+    // } else {
+    //     res
+    //         .status(404)
+    //         .json({ message: "Note doesn't exist" })
+    // }
 })
 
 //  POST request to add a note
