@@ -1,1 +1,12 @@
-[]
+[
+    {
+        "title": "test1",
+        "text": "Hello",
+        "note_id": "305fb370-b93b-11ec-9431-e3970e810b13"
+    },
+    {
+        "title": "test 2",
+        "text": "Bye!",
+        "note_id": "3ec3ef80-b93b-11ec-9431-e3970e810b13"
+    }
+]
