@@ -38,6 +38,6 @@ This application called Note Taker can be used to write and save notes. This app
 
 ## Websites
 
-*[Gihub Repository](https://github.com/aidyel/Team-Profile-Generator)
+*[Gihub Repository](https://github.com/aidyel/Note-Taker)
 
-*[Heroku deployed link](https://drive.google.com/file/d/1SZXc7pSoheRPePSiVxh02e_iDObq13kb/view)
+*[Heroku deployed link](https://damp-woodland-20937.herokuapp.com)

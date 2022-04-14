@@ -47,34 +47,22 @@ app.get('/api/notes', (req, res) => {
 });
 
 // Get request for a single note
-app.get('/api/notes/:note_id', (req, res) => {
-    console.log(req.params.note_id);
+app.get('/api/notes/:id', (req, res) => {
+    console.log(req.params.id);
     fs.readFile('./db/db.json', 'utf8', (err, data) => {
         if (err) {
             console.log(err);
         }
         const notesId = JSON.parse(data);
 
-        res.json(notesId.filter((noteId) => noteId.note_id === req.params.note_id));
+        res.json(notesId.filter((noteId) => noteId.id === req.params.id));
     });
 
-    // if (req.body && req.params.note_id) {
-    //     console.log(`${req.text} request received to get an single note`);
-    //     const noteId = req.params.note_id;
-    //     for (let i = 0; i < notes.length; i++) {
-    //         const currentNote = notes[1];
-    //         if (currentNote.note_id === noteId) {
-    //             res.json(currentNote);
-    //             return;
-    //         }
-    //     }
-    //     res.json('Note ID not found');
-    // }
 });
 
 // Delete request
-app.delete('/api/notes/:note_id', (req, res) => {
-    console.log(req.params.note_id);
+app.delete('/api/notes/:id', (req, res) => {
+    console.log(req.params.id);
 
     fs.readFile('./db/db.json', 'utf8', (err, data) => {
         if (err) {
@@ -82,12 +70,12 @@ app.delete('/api/notes/:note_id', (req, res) => {
         }
         let notesId = JSON.parse(data);
  
-        const deleteId = req.params.note_id;
+        const deleteId = req.params.id;
 
-        const deleted = notesId.find(note => note.note_id === deleteId);
+        const deleted = notesId.find(note => note.id === deleteId);
         console.log("Note to delete ", deleted)
         if (deleted) {
-            notesId = notesId.filter(note => note.note_id != deleteId);
+            notesId = notesId.filter(note => note.id != deleteId);
 
             fs.writeFile('./db/db.json',
             JSON.stringify(notesId, null, 4),
@@ -108,16 +96,6 @@ app.delete('/api/notes/:note_id', (req, res) => {
       
     });
 
-
-    // console.log(req.params)
-    // const deleted = notes.find(note => note.id === id);
-    // if (deleted) {
-    //     notes = notes.filter(note => note.id != id);
-    // } else {
-    //     res
-    //         .status(404)
-    //         .json({ message: "Note doesn't exist" })
-    // }
 })
 
 //  POST request to add a note
@@ -133,7 +111,7 @@ app.post('/api/notes', (req, res) => {
         const newNote = {
             title,
             text,
-            note_id: uuid(),
+            id: uuid(),
         };
 
         // obtain existing notes
